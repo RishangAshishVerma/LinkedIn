@@ -47,7 +47,7 @@ export const like = async (req, res) => {
         }
 
         if (post.like.includes(userId)) {
-            post.like = post.like.filter((id) => id.toString() !== userId.toString()) // fixed filter
+            post.like = post.like.filter((id) => id!== userId) // fixed filter
         } else {
             post.like.push(userId)
         }
