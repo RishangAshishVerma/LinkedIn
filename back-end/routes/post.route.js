@@ -1,7 +1,7 @@
 import express from "express"
 import isAuth from"../middlewares/isAuth.middleware.js"
 import upload from "../middlewares/multer.middleware.js"
-import { comment, createPost, getPost, like } from "../controllers/post.controoller"
+import { comment, createPost, getPost, like } from "../controllers/post.controoller.js"
 import { get } from "mongoose"
 
 const postRouter = express.Router()

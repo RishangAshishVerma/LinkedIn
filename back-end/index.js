@@ -4,6 +4,8 @@ import connectDB from "./utils/db.js";
 import authRouter from "./routes/auth.routes.js"
 import cookieParser from "cookie-parser";
 import userRouter from "./routes/user.route.js";
+import postRouter from "./routes/post.route.js"
+import connectionRouter from "./routes/connection.routes.js"
 dotenv.config();
 
 let app = express();
@@ -12,6 +14,8 @@ app.use(cookieParser());
 let PORT = process.env.PORT || 5000;
 app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
+app.use("/api/post", postRouter);
+app.use("/api/connection",connectionRouter)
 
 
 app.listen(PORT, () => {
