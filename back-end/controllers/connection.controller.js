@@ -1,6 +1,6 @@
 import Connection from "../models/connection.model.js"
 import User from "../models/user.model.js"
-
+  
 export const sendConnection = async (req, res) => {
     try {
         let { id } = req.params
@@ -20,6 +20,7 @@ export const sendConnection = async (req, res) => {
             receiver: id,
             status: "pending"
         });
+
         if (existingConnection) {
             return res.status(400).json({ Message: "request already exist" })
         }
@@ -167,4 +168,4 @@ export const getUserConnections = async (req, res) => {
     } catch (error) {
         return res.status(500).json({ message: `error while getting user connections ${error}` });
     }
-};
+};    
