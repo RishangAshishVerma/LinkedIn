@@ -1,6 +1,7 @@
 import Connection from "../models/connection.model.js"
 import User from "../models/user.model.js"
-  
+import { io, userSocketMap } from "../index.js"
+
 export const sendConnection = async (req, res) => {
     try {
         let { id } = req.params
@@ -32,6 +33,18 @@ export const sendConnection = async (req, res) => {
 
         return res.status(200).json(newRequest)
 
+        // using web socket here we have use socket id to give the real time update to the selceted user not all like like and comment 
+        let receiverSocketId = userSocketMap.get(id)
+        let senderSocketId = userSocketMap.get(sender)
+
+        if (receiverSocketId) {
+            io.to(receiverSocketId).emit("statusUpate", { updatedUserId: sender, newStatus: "recevied" })
+        }
+
+        if (senderSocketId) {
+            io.to(senderSocketId).emit("statusUpate", { updatedUserId: id, newStatus: "pending" })
+        }
+
     } catch (error) {
         return res.status(500).json({ Message: `sendconnection error ${error}` })
     }
@@ -57,6 +70,18 @@ export const acceptConnection = async (req, res) => {
         await User.findByIdAndUpdate(connection.sender._id, {
             $addToSet: { connection: req.userId }
         })
+        // using web socket here we have use socket id to give the real time update to the selceted user not all like like and comment 
+
+        let receiverSocketId = userSocketMap.get(connection.receiver._id.toString())
+        let senderSocketId = userSocketMap.get(connection.sender._id.toString())
+
+        if (receiverSocketId) {
+            io.to(receiverSocketId).emit("statusUpate", { updatedUserId: connection.sender._id, newStatus: "Disconnect", })
+        }
+
+        if (senderSocketId) {
+            io.to(senderSocketId).emit("statusUpate", { updatedUserId: req.userId, newStatus: "Disconnect" })
+        }
 
         return res.status(200).json({ message: "connection accepted" })
 
@@ -130,6 +155,18 @@ export const removeConnection = async (req, res) => {
         await User.findByIdAndUpdate(otherUserId, { $pull: { connection: myId } });
 
         return res.json({ message: "connection removed successfully" });
+        // using web socket here we have use socket id to give the real time update to the selceted user not all like like and comment 
+
+        let receiverSocketId = userSocketMap.get(otherUserId)
+        let senderSocketId = userSocketMap.get(myId)
+
+        if (receiverSocketId) {
+            io.to(receiverSocketId).emit("statusUpate", { updatedUserId: myId, newStatus: "connect", })
+        }
+
+        if (senderSocketId) {
+            io.to(senderSocketId).emit("statusUpate", { updatedUserId: otherUserId, newStatus: "connect" })
+        }
 
     } catch (error) {
         return res.status(500).json({ message: `there is error while removeing the connection ${error}` })
