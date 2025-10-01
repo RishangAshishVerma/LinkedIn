@@ -162,7 +162,7 @@ export const removeConnection = async (req, res) => {
 
         if (receiverSocketId) {
             io.to(receiverSocketId).emit("statusUpate", { updatedUserId: myId, newStatus: "connect", })
-        }
+        }   
 
         if (senderSocketId) {
             io.to(senderSocketId).emit("statusUpate", { updatedUserId: otherUserId, newStatus: "connect" })
