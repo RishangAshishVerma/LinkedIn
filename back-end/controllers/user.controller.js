@@ -68,3 +68,27 @@ export const getUserProfile = async (req, res) => {
         return res.status(500).json({ message: "there is some error while getting user profile" });
     }
 }
+
+export const searchUser = async (req, res) => {
+    try {
+        let { query } = req.query
+        if (!query) {
+            return res.status(400).json({ message: "query is required" })
+        }
+
+        let users = await User.find({
+            $or: [
+                { firstName: { $regex: query, $options: "i" } },
+                { lastName: { $regex: query, $options: "i" } },
+                { userName: { $regex: query, $options: "i" } },
+                { skills: { $in: [query] } },
+            ]
+        })
+
+        return res.status(200).json(users)
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({ message:`there is an while getting user trhough query search error ${error}` });
+    }
+
+}
