@@ -8,6 +8,7 @@ import postRouter from "./routes/post.route.js"
 import connectionRouter from "./routes/connection.routes.js"
 import http from "http"
 import { Server } from "socket.io";
+import notifactionRoutes from "./routes/notifaction.routes.js";
 dotenv.config();
 
 let app = express();
@@ -25,6 +26,7 @@ app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);
 app.use("/api/post", postRouter);
 app.use("/api/connection", connectionRouter)
+app.use("/api/notifaction", notifactionRoutes)
 export const userSocketMap = new Map() // to store userId and socketId
 // socket io connection
 

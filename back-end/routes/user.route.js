@@ -1,6 +1,6 @@
 import express from 'express';
 import isAuth from '../middlewares/isAuth.middleware.js';
-import { getCurrentUser, getUserProfile, searchUser, updateProfile } from '../controllers/user.controller.js';
+import { getCurrentUser, getUserProfile, searchUser, updateProfile ,getSuggestedUser} from '../controllers/user.controller.js';
 import upload from '../middlewares/multer.middleware.js';
 
 let userRouter = express.Router();
@@ -14,5 +14,6 @@ userRouter.put(
     ]), updateProfile);
 userRouter.get('/userprofile/:username', isAuth, getUserProfile)
 userRouter.get('/search', isAuth, searchUser)
+userRouter.get('/suggesteduser', isAuth, getSuggestedUser)
 
 export default userRouter;

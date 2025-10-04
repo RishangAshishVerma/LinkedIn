@@ -1,5 +1,7 @@
+import { connect } from "mongoose";
 import User from "../models/user.model.js";
 import uploadOnCloudinary from "../utils/cloudinary.js";
+import Connection from "../models/connection.model.js";
 export const getCurrentUser = async (req, res) => {
     try {
         const user = await User.findById(req.userId).select("-password");
@@ -88,7 +90,29 @@ export const searchUser = async (req, res) => {
         return res.status(200).json(users)
     } catch (error) {
         console.log(error);
-        return res.status(500).json({ message:`there is an while getting user trhough query search error ${error}` });
+        return res.status(500).json({ message: `there is an while getting user trhough query search error ${error}` });
     }
 
 }
+
+    export const getSuggestedUser = async (req, res) => {
+    try {
+        const currentUser = await User.findById(req.userId).select("connections");
+
+        if (!currentUser) {
+        return res.status(404).json({ message: "User not found" });
+        }
+        const suggestedUsers = await User.find({
+        _id: { 
+            $ne: currentUser._id, 
+            $nin: currentUser.connections 
+        }
+        }).select("-password");
+
+        return res.status(200).json(suggestedUsers);
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ message: `suggest user error ${error}` });
+    }
+    };
