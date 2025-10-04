@@ -1,6 +1,9 @@
 // controllers/post.controller.js
+import { use } from "react"
 import { io } from "../index.js"
+import Notifaction from "../models/notification.model.js"
 import Post from "../models/post.model.js"
+import notifactionRoutes from "../routes/notifaction.routes.js"
 import uploadOnCloudinary from "../utils/cloudinary.js"
 
 export const createPost = async (req, res) => {
@@ -53,6 +56,15 @@ export const like = async (req, res) => {
             post.like = post.like.filter((id) => id !== userId)
         } else {
             post.like.push(userId)
+            if(post.author!= userId){
+
+                let notifaction = await Notifaction.create({
+                    receiver:post.author,
+                    type:"like",
+                    relatedUser:"userId",
+                    relatedPost:"postId"
+                })
+            }
         }
         await post.save()
 
@@ -76,7 +88,15 @@ export const comment = async (req, res) => {
             { $push: { comments: { content, user: userId } } },
             { new: true }
         ).populate("comments.user", "firstName lastName userName profileImage headline")
-
+        if (post.author!=userId) {
+            
+            let notifaction = await Notifaction.create({
+                receiver:post.author,
+                type:"comment",
+                relatedUser:"userId",
+                relatedPost:"postId"
+            })
+        }
         io.emit("commentAdded", { postId, likes: post.comments })
         
         return res.status(200).json(post)

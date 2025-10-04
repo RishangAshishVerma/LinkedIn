@@ -1,6 +1,7 @@
 import Connection from "../models/connection.model.js"
 import User from "../models/user.model.js"
 import { io, userSocketMap } from "../index.js"
+import Notifaction from "../models/notification.model.js"
 
 export const sendConnection = async (req, res) => {
     try {
@@ -61,7 +62,11 @@ export const acceptConnection = async (req, res) => {
         if (connection.status != "pending") {
             return res.status(400).json({ message: "request under process " })
         }
-
+        let notifaction = await Notifaction.create({
+            receiver: connection.sender,
+            type: "connectionAccepted",
+            relatedUser: "userId",
+        })
         connection.status = "accepted"
         await connection.save()
         await User.findByIdAndUpdate(req.userId, {
@@ -162,7 +167,7 @@ export const removeConnection = async (req, res) => {
 
         if (receiverSocketId) {
             io.to(receiverSocketId).emit("statusUpate", { updatedUserId: myId, newStatus: "connect", })
-        }   
+        }
 
         if (senderSocketId) {
             io.to(senderSocketId).emit("statusUpate", { updatedUserId: otherUserId, newStatus: "connect" })
