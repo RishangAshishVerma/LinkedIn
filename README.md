@@ -53,9 +53,6 @@ back-end/
 ┣ package.json
 ┣ package-lock.json
 
-yaml
-Copy code
-
 ---
 
 ## ⚙️ Installation & Setup
